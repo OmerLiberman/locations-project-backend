@@ -2,6 +2,7 @@ const uuid = require('uuid').v4;
 const {validationResult} = require('express-validator');
 
 const HttpError = require('../models/http-error');
+const coordinatesGetter = require('../util/location');
 
 let DUMMY_PLACES = [
   {
@@ -44,12 +45,12 @@ const createPlace = (req, res, next) => {
   if (!errors.isEmpty()) {
     throw new HttpError('Invalid inputs passed.', 422);
   }
-  const {title, description, coordinates, address, creator} = req.body;
+  const {title, description, address, creator} = req.body;
   const createdPlace = {
     id: uuid(),
     title,
     description,
-    location: coordinates,
+    location: coordinatesGetter.getCoordsForAddress(address),
     address,
     creator,
   };
@@ -78,6 +79,9 @@ const updatePlace = (req, res, next) => {
 
 const deletePlace = (req, res, next) => {
   const pid = req.params.pid;
+  if (!DUMMY_PLACES.find(p => (p.id === pid))) {
+    throw new HttpError('Could not find a place with this id.', 404);
+  }
   DUMMY_PLACES = DUMMY_PLACES.filter(p => (p.id !== pid));
   res.status(200).json({message: 'Deleted place.'});
 };
