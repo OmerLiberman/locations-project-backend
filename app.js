@@ -9,8 +9,8 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.use('/api/places', PlacesRoutes); // => /api/places/ (dds the routes from places-routes.js)
-app.use('/api/users', UsersRoutes); // => /api/places/ (dds the routes from places-routes.js)
+app.use('/api/places', PlacesRoutes); // => /api/places/
+app.use('/api/users', UsersRoutes); // => /api/places/
 
 app.use((req, res, next) => {
   const err = new HttpError('Could not find route', 404);

@@ -1,4 +1,5 @@
 const express = require('express');
+const {check} = require('express-validator');
 
 const PlacesController = require('../controllers/places-controller');
 
@@ -8,12 +9,26 @@ router.get('/:pid', PlacesController.getPlaceById);
 
 router.get('/user/:uid', PlacesController.getPlacesByUserId);
 
-router.post('/', PlacesController.createPlace);
+router.post(
+    '/',  // the url
+    // what to validate:
+    [
+        check('title').not().isEmpty(),
+        check('description').isLength({min: 5, max: 20}),
+        check('address').not().isEmpty(),
+    ],
+    // middleware function
+    PlacesController.createPlace
+);
 
-router.patch('/:pid', PlacesController.updatePlace);
+router.patch(
+    '/:pid',
+    [
+      check('title').not().empty(),
+    ],
+    PlacesController.updatePlace);
 
 router.delete('/:pid', PlacesController.deletePlace);
-
 
 
 module.exports = router;
