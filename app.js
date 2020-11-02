@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const PlacesRoutes = require('./routes/places-routes');
 const UsersRoutes = require('./routes/users-routes');
@@ -25,4 +26,10 @@ app.use((error, req, res, next) => {
       json({message: error.message || 'An unknown error occurred.'});
 });
 
-app.listen(5000);
+const uri = "mongodb+srv://omer11:omer11@cluster0.xtuj5.mongodb.net/places?retryWrites=true&w=majority";
+mongoose.connect(uri).then(() => {
+  console.log("Connection to mongo-db established.")
+  app.listen(5000);
+}).catch(err => {
+  console.log(err);
+});

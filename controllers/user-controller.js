@@ -1,4 +1,4 @@
-import {validationResult} from "express-validator";
+const {validationResult} = require("express-validator");
 const uuid = require('uuid').v4;
 
 const HttpError = require('../models/http-error');

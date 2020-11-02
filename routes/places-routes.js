@@ -24,7 +24,7 @@ router.post(
 router.patch(
     '/:pid',
     [
-      check('title').not().empty(),
+      check('title').not().isEmpty(),
     ],
     PlacesController.updatePlace);
 

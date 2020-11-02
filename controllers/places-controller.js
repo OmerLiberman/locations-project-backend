@@ -3,34 +3,31 @@ const {validationResult} = require('express-validator');
 
 const HttpError = require('../models/http-error');
 const coordinatesGetter = require('../util/location');
+const Place = require('../models/place');
 
-let DUMMY_PLACES = [
-  {
-    id: 'p1',
-    title: 'Empire State',
-    description: 'Sky scraper',
-    location: {
-      lat: 40.748,
-      lng: -73.987,
-    },
-    address: 'Something in NY',
-    creator: 'u1',
-  },
-];
-
-const getPlaceById = (req, res, next) => {
+const getPlaceById = async (req, res, next) => {
   const pid = req.params.pid;
-  const place = DUMMY_PLACES.find(p => {
-    return (p.id === pid);
-  });
-  if (!place) {
-    return next(new HttpError('Could not find a place for provided id.', 404));
+  let place = null;
+  try {
+    place = await Place.findById(pid);
+  } catch (err) {
+    const error = new HttpError('Something went wrong.', 500);
+    return next(error);
   }
-  res.json({place});
+
+  if (!place) {
+    const error = new HttpError('Could not find a place.', 404);
+    return next(error);
+  }
+
+  res.json({place: place.toObject({getters: true})});
 };
 
 const getPlacesByUserId = (req, res, next) => {
   const uid = req.params.uid;
+
+
+
   const places = DUMMY_PLACES.filter(place => {
     return place.creator === uid;
   });
@@ -40,22 +37,28 @@ const getPlacesByUserId = (req, res, next) => {
   res.json({place: places});
 };
 
-const createPlace = (req, res, next) => {
+const createPlace = async (req, res, next) => {
+  console.log('Log: ', req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     throw new HttpError('Invalid inputs passed.', 422);
   }
   const {title, description, address, creator} = req.body;
-  const createdPlace = {
-    id: uuid(),
+  const DUMMY_IMG = 'https://www.touristisrael.com/wp-content/uploads/WesternWall-courtesy1-e1449917399814-300x200.jpg';
+  const createdPlace = new Place({
     title,
     description,
-    location: coordinatesGetter.getCoordsForAddress(address),
     address,
+    location: coordinatesGetter.getCoordsForAddress(address),
+    image: DUMMY_IMG,
     creator,
-  };
-  DUMMY_PLACES.push(createdPlace);
-
+  });
+  try {
+    await createdPlace.save();
+  } catch (err) {
+    let error = new HttpError('Creation failed, try again.', 500);
+    return next(error);
+  }
   res.status(201).json({place: createdPlace});
 };
 
