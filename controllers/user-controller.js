@@ -3,15 +3,6 @@ const uuid = require('uuid').v4;
 
 const HttpError = require('../models/http-error');
 
-let DUMMY_USERS = [
-  {
-    id: 'u1',
-    username: 'Omer',
-    email: 'omer@omer.com',
-    password: 'testers',
-  },
-];
-
 const getUsers = (req, res, next) => {
   res.json({users: DUMMY_USERS});
 };
