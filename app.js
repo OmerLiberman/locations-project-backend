@@ -26,10 +26,12 @@ app.use((error, req, res, next) => {
       json({message: error.message || 'An unknown error occurred.'});
 });
 
-const uri = "mongodb+srv://omer11:omer11@cluster0.xtuj5.mongodb.net/places?retryWrites=true&w=majority";
-mongoose.connect(uri).then(() => {
-  console.log("Connection to mongo-db established.")
-  app.listen(5000);
-}).catch(err => {
-  console.log(err);
-});
+const uri = 'mongodb+srv://omer11:omer11@cluster0.xtuj5.mongodb.net/places?retryWrites=true&w=majority';
+mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true}).
+    then(() => {
+      console.log('Connection to mongo-db established.');
+      app.listen(5000);
+    }).
+    catch(err => {
+      console.log(err);
+    });
